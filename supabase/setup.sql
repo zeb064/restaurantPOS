@@ -14,7 +14,7 @@
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO perfiles (usuario_id, restaurante_id, nombre, rol)
+  INSERT INTO public.perfiles (usuario_id, restaurante_id, nombre, rol)
   VALUES (
     NEW.id,
     '00000000-0000-0000-0000-000000000001',
