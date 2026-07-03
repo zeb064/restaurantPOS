@@ -561,10 +561,8 @@ SELECT apply_table_rls('ordenes');
 SELECT apply_table_rls('cajas');
 SELECT apply_table_rls('inventario');
 SELECT apply_table_rls('recetas');
-SELECT apply_table_rls('ingredientes_receta');
 SELECT apply_table_rls('proveedores');
 SELECT apply_table_rls('compras');
-SELECT apply_table_rls('detalles_compra');
 SELECT apply_table_rls('bajas_inventario');
 SELECT apply_table_rls('produccion');
 SELECT apply_table_rls('tickets_soporte');
@@ -631,6 +629,90 @@ CREATE POLICY "Insertar movimientos_caja por caja"
       WHERE cajas.id = movimientos_caja.caja_id
       AND cajas.restaurante_id = get_current_restaurante_id()
     )
+  );
+
+-- 7.8. Políticas específicas para ingredientes_receta (sin restaurante_id directo)
+CREATE POLICY "Acceso ingredientes_receta por receta"
+  ON ingredientes_receta FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM recetas
+      WHERE recetas.id = ingredientes_receta.receta_id
+      AND recetas.restaurante_id = get_current_restaurante_id()
+    )
+  );
+
+CREATE POLICY "Insertar ingredientes_receta por receta"
+  ON ingredientes_receta FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM recetas
+      WHERE recetas.id = ingredientes_receta.receta_id
+      AND recetas.restaurante_id = get_current_restaurante_id()
+    )
+  );
+
+CREATE POLICY "Actualizar ingredientes_receta por receta"
+  ON ingredientes_receta FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM recetas
+      WHERE recetas.id = ingredientes_receta.receta_id
+      AND recetas.restaurante_id = get_current_restaurante_id()
+    )
+  );
+
+CREATE POLICY "Eliminar ingredientes_receta por receta"
+  ON ingredientes_receta FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM recetas
+      WHERE recetas.id = ingredientes_receta.receta_id
+      AND recetas.restaurante_id = get_current_restaurante_id()
+    )
+    AND get_current_user_role() = 'admin'
+  );
+
+-- 7.9. Políticas específicas para detalles_compra (sin restaurante_id directo)
+CREATE POLICY "Acceso detalles_compra por compra"
+  ON detalles_compra FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM compras
+      WHERE compras.id = detalles_compra.compra_id
+      AND compras.restaurante_id = get_current_restaurante_id()
+    )
+  );
+
+CREATE POLICY "Insertar detalles_compra por compra"
+  ON detalles_compra FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM compras
+      WHERE compras.id = detalles_compra.compra_id
+      AND compras.restaurante_id = get_current_restaurante_id()
+    )
+  );
+
+CREATE POLICY "Actualizar detalles_compra por compra"
+  ON detalles_compra FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM compras
+      WHERE compras.id = detalles_compra.compra_id
+      AND compras.restaurante_id = get_current_restaurante_id()
+    )
+  );
+
+CREATE POLICY "Eliminar detalles_compra por compra"
+  ON detalles_compra FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM compras
+      WHERE compras.id = detalles_compra.compra_id
+      AND compras.restaurante_id = get_current_restaurante_id()
+    )
+    AND get_current_user_role() = 'admin'
   );
 
 -- 8. CONFIGURACIÓN SUPABASE REALTIME
