@@ -754,13 +754,20 @@ CREATE POLICY "Eliminar detalles_compra por compra"
   );
 
 -- 8. CONFIGURACIÓN SUPABASE REALTIME
-ALTER PUBLICATION supabase_realtime ADD TABLE ordenes;
-ALTER PUBLICATION supabase_realtime ADD TABLE detalles_orden;
-ALTER PUBLICATION supabase_realtime ADD TABLE pagos;
-ALTER PUBLICATION supabase_realtime ADD TABLE cajas;
-ALTER PUBLICATION supabase_realtime ADD TABLE mesas;
-ALTER PUBLICATION supabase_realtime ADD TABLE inventario;
-ALTER PUBLICATION supabase_realtime ADD TABLE productos;
+DO $$
+DECLARE
+  tbl TEXT;
+BEGIN
+  FOR tbl IN SELECT unnest(ARRAY['ordenes','detalles_orden','pagos','cajas','mesas','inventario','productos'])
+  LOOP
+    BEGIN
+      EXECUTE format('ALTER PUBLICATION supabase_realtime ADD TABLE %I', tbl);
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END;
+  END LOOP;
+END;
+$$;
 
 -- ============================================================
 -- PASO 3: VISTAS Y FUNCIONES (0001_views_and_functions.sql)
