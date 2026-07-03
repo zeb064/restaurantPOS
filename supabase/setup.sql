@@ -42,10 +42,12 @@ VALUES ('restaurantes', 'restaurantes', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 -- Políticas de Storage
+DROP POLICY IF EXISTS "Imágenes públicas de productos" ON storage.objects;
 CREATE POLICY "Imágenes públicas de productos"
   ON storage.objects FOR SELECT
   USING (bucket_id IN ('productos', 'restaurantes'));
 
+DROP POLICY IF EXISTS "Admin puede subir imágenes" ON storage.objects;
 CREATE POLICY "Admin puede subir imágenes"
   ON storage.objects FOR INSERT
   WITH CHECK (
