@@ -1098,14 +1098,13 @@ $$ LANGUAGE plpgsql STABLE;
 -- CONFIGURACIÓN DE AUTENTICACIÓN
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
-DECLARE
-  v_restaurante_id UUID;
 BEGIN
-  INSERT INTO perfiles (usuario_id, nombre, rol)
+  INSERT INTO perfiles (usuario_id, restaurante_id, nombre, rol)
   VALUES (
     NEW.id,
+    '00000000-0000-0000-0000-000000000001',
     COALESCE(NEW.raw_user_meta_data->>'nombre', NEW.email),
-    COALESCE(NEW.raw_user_meta_data->>'rol', 'cajero')
+    COALESCE(NEW.raw_user_meta_data->>'rol', 'admin')
   );
   RETURN NEW;
 END;
