@@ -28,7 +28,7 @@
     "@mantine/hooks": "^7.10.0",
     "@mantine/notifications": "^7.10.0",
     "@supabase/ssr": "^0.3.0",
-    "@supabase/supabase-js": "^2.43.0",
+    "@supabase/supabase-js": "^2.110.0",
     "@tabler/icons-react": "^3.44.0",
     "dayjs": "^1.11.11",
     "drizzle-orm": "^0.31.0",
